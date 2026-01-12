@@ -1,0 +1,507 @@
+flowMeta:
+  name: AI-Research-Assistan
+  description: Automated research assistant that generates comprehensive reports on
+    any topic
+  avatarIcon: https://oss-beijing-m8.openstorage.cn/SparkBotProd/icon/common/emojiitem_00_10@2x.png
+  avatarColor: '#FFEAD5'
+  advancedConfig: '{"prologue":{"enabled":false,"inputExample":["","",""]},"textToSpeech":{"enabled":false,"vcn_cn":"x5_lingxiaotang_flow","vcn_en":""},"suggestedQuestionsAfterAnswer":{"enabled":false},"chatBackground":{"enabled":false}}'
+  dslVersion: v1
+flowData:
+  nodes:
+  - id: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    dragging: false
+    selected: false
+    width: 362
+    height: 122
+    position:
+      x: -76.5098029155223
+      y: 131.34516855725695
+    positionAbsolute:
+      x: -76.5098029155223
+      y: 131.34516855725695
+    type: custom
+    data:
+      allowInputReference: false
+      allowOutputReference: true
+      label: 开始
+      status: ''
+      nodeMeta:
+        aliasName: 开始节点
+        nodeType: 基础节点
+      inputs: [
+        ]
+      outputs:
+      - id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+        name: AGENT_USER_INPUT
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: 用户本轮对话输入内容
+        required: true
+        deleteDisabled: true
+      nodeParam: {
+        }
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+      description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+      updatable: false
+  - id: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    dragging: false
+    selected: false
+    width: 362
+    height: 82
+    position:
+      x: 1965.4215931947808
+      y: 244.4934944496615
+    positionAbsolute:
+      x: 1965.4215931947808
+      y: 244.4934944496615
+    type: custom
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 结束
+      references: [
+        ]
+      status: ''
+      nodeMeta:
+        aliasName: 结束节点
+        nodeType: 基础节点
+      inputs:
+      - id: 82de2b42-a059-4c98-bffb-b6b4800fcac9
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              id: a0535421-dfd3-46ca-a930-b9714774dc68
+              nodeId: spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443be
+              name: output
+            contentErrMsg: ''
+        fileType: ''
+      outputs: [
+        ]
+      nodeParam:
+        template: |+
+          {{output}}
+
+
+
+
+
+        streamOutput: true
+        outputMode: 1
+        templateErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+      description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+      updatable: false
+  - id: spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333
+    dragging: false
+    selected: true
+    width: 362
+    height: 132
+    position:
+      x: 327.26933963177146
+      y: 155.43664421989342
+    positionAbsolute:
+      x: 327.26933963177146
+      y: 155.43664421989342
+    type: custom
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: Generate_Questions
+      labelEdit: false
+      references: [
+        ]
+      status: ''
+      nodeMeta:
+        nodeType: Basic Node
+        aliasName: 大模型
+      inputs:
+      - id: d5727a02-f3e0-4473-9914-bb4f8320e2a1
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+              name: AGENT_USER_INPUT
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: b2981518-847d-4eb4-b76d-846504906882
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        maxTokens: 2048
+        topK: 4
+        auditing: default
+        domain: llama-3.1-8b-instant
+        template: |+
+          Generate 5-7 key research questions about the following topic that would help create a comprehensive research report:
+
+          Topic: {{input}}
+
+          Format your response as a numbered list of questions.
+
+
+        model: spark
+        serviceId: llama-3.1-8b-instant
+        respFormat: 0
+        llmId: 593066024
+        url: https://api.groq.com/openai/v1/chat/completions
+        appId: 680ab54f
+        uid: ffb159d9-e2d9-44ed-a089-6776d3b1ee4e
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        templateErrMsg: ''
+        modelId: 1
+        isThink: false
+        multiMode: false
+        modelName: Groq-Llama
+        modelEnabled: true
+        llmIdErrMsg: ''
+        source: openai
+        extraParams:
+          temperature: 1
+        systemTemplate: |+
+          You are an expert research analyst. Your task is to generate comprehensive research questions that will help thoroughly investigate any given topic. Generate questions that cover different angles: historical context, current state, future implications, key players, challenges, and opportunities.
+
+
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: Based on the input prompt, the selected large language model will
+        be invoked to respond accordingly.
+      updatable: false
+  - id: spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a
+    dragging: false
+    selected: false
+    width: 362
+    height: 132
+    position:
+      x: 724.682912619843
+      y: 299.7156867579083
+    positionAbsolute:
+      x: 724.682912619843
+      y: 299.7156867579083
+    type: custom
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: Deep_Analysis
+      labelEdit: false
+      references: [
+        ]
+      status: ''
+      nodeMeta:
+        nodeType: Basic Node
+        aliasName: 大模型
+      inputs:
+      - id: b9351d20-091d-451a-b2e3-42f259ee6e5a
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              id: b2981518-847d-4eb4-b76d-846504906882
+              nodeId: spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333
+              name: output
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: 38a65a2f-7e89-4f59-9098-8aeb4e35a709
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        maxTokens: 2048
+        topK: 4
+        auditing: default
+        domain: llama-3.1-8b-instant
+        template: |+
+          Based on the following research questions, provide a detailed analysis for each one. Include relevant data points, different perspectives, and key insights.
+
+          Research Questions:
+          {{input}}
+
+          For each question, provide:
+          1. A comprehensive answer (2-3 paragraphs)
+          2. Key data points or statistics (if applicable)
+          3. Different perspectives on the issue
+
+
+        model: spark
+        serviceId: llama-3.1-8b-instant
+        respFormat: 0
+        llmId: 593066024
+        url: https://api.groq.com/openai/v1/chat/completions
+        appId: 680ab54f
+        uid: ffb159d9-e2d9-44ed-a089-6776d3b1ee4e
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        templateErrMsg: ''
+        modelId: 1
+        isThink: false
+        multiMode: false
+        modelName: Groq-Llama
+        modelEnabled: true
+        llmIdErrMsg: ''
+        source: openai
+        extraParams:
+          temperature: 1
+        systemTemplate: |+
+          You are a senior research analyst with expertise in synthesizing information and providing balanced, well-reasoned analysis. Your responses should be thorough, citing multiple perspectives and considering various implications.
+
+
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: Based on the input prompt, the selected large language model will
+        be invoked to respond accordingly.
+      updatable: false
+  - id: spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0
+    dragging: false
+    selected: false
+    width: 362
+    height: 132
+    position:
+      x: 1117.3519916776822
+      y: 242.69648813780447
+    positionAbsolute:
+      x: 1117.3519916776822
+      y: 242.69648813780447
+    type: custom
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: Generate_Report
+      labelEdit: false
+      references: [
+        ]
+      status: ''
+      nodeMeta:
+        nodeType: Basic Node
+        aliasName: 大模型
+      inputs:
+      - id: 4a3e125b-0a25-45d0-bf8d-ffef313390ea
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              id: 38a65a2f-7e89-4f59-9098-8aeb4e35a709
+              nodeId: spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a
+              name: output
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: 48777d36-1780-47c7-9d1e-13bc7f77186d
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        maxTokens: 2048
+        topK: 4
+        auditing: default
+        domain: llama-3.1-8b-instant
+        template: |+
+          Transform the following analysis into a professional research report in Markdown format.
+
+          Analysis:
+          {{input}}
+
+          The report should include:
+          1. Title
+          2. Table of Contents
+          3. Executive Summary (brief)
+          4. Introduction
+          5. Main Findings (organized by theme)
+          6. Implications and Recommendations
+          7. Conclusion
+
+          Use proper Markdown formatting with headers (##), bullet points, and emphasis where appropriate.
+
+
+        model: spark
+        serviceId: llama-3.1-8b-instant
+        respFormat: 0
+        llmId: 593066024
+        url: https://api.groq.com/openai/v1/chat/completions
+        appId: 680ab54f
+        uid: ffb159d9-e2d9-44ed-a089-6776d3b1ee4e
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        templateErrMsg: ''
+        modelId: 1
+        isThink: false
+        multiMode: false
+        modelName: Groq-Llama
+        modelEnabled: true
+        llmIdErrMsg: ''
+        source: openai
+        extraParams:
+          temperature: 1
+        systemTemplate: |+
+          You are a professional technical writer specializing in creating clear, well-structured research reports. Your reports are known for being comprehensive yet accessible, with excellent organization and flow.
+
+
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: Based on the input prompt, the selected large language model will
+        be invoked to respond accordingly.
+      updatable: false
+  - id: spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443be
+    dragging: false
+    selected: false
+    width: 362
+    height: 132
+    position:
+      x: 1540.665772910103
+      y: 300.8802742080527
+    positionAbsolute:
+      x: 1540.665772910103
+      y: 300.8802742080527
+    type: custom
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: Executive_Summary
+      labelEdit: false
+      references: [
+        ]
+      status: ''
+      nodeMeta:
+        nodeType: Basic Node
+        aliasName: 大模型
+      inputs:
+      - id: 286fb87a-d634-4047-b199-faeb2d40311b
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              id: 48777d36-1780-47c7-9d1e-13bc7f77186d
+              nodeId: spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0
+              name: output
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: a0535421-dfd3-46ca-a930-b9714774dc68
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        maxTokens: 2048
+        topK: 4
+        auditing: default
+        domain: llama-3.1-8b-instant
+        template: |+
+          Create a concise executive summary (maximum 200 words) of the following research report. Focus on the key findings, main implications, and recommended actions.
+
+          Report:
+          {{input}}
+
+          Format:
+          - Start with a one-sentence overview
+          - List 3-5 key findings as bullet points
+          - End with 1-2 recommended actions
+
+
+        model: spark
+        serviceId: llama-3.1-8b-instant
+        respFormat: 0
+        llmId: 593066024
+        url: https://api.groq.com/openai/v1/chat/completions
+        appId: 680ab54f
+        uid: ffb159d9-e2d9-44ed-a089-6776d3b1ee4e
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        templateErrMsg: ''
+        modelId: 1
+        isThink: false
+        multiMode: false
+        modelName: Groq-Llama
+        modelEnabled: true
+        llmIdErrMsg: ''
+        source: openai
+        extraParams:
+          temperature: 1
+        systemTemplate: |+
+          You are an expert at distilling complex information into clear, actionable executive summaries. Your summaries are concise yet comprehensive, highlighting the most critical points for busy decision-makers.
+
+
+        exceptionHandlingEdge: fail_one_of::31a53df7-dee3-4db1-a151-41d40c1ec9a0
+        handlingEdge: normal_one_of::ca21005f-e81a-4905-9478-b22f1c023dde
+      retryConfig:
+        shouldRetry: false
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: Based on the input prompt, the selected large language model will
+        be invoked to respond accordingly.
+      updatable: false
+  edges:
+  - source: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    target: spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333
+    type: customEdge
+    id: reactflow__edge-node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783-spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333
+    markerEnd:
+      type: arrow
+      color: '#6356EA'
+    data:
+      edgeType: curve
+  - source: spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333
+    target: spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a
+    type: customEdge
+    id: reactflow__edge-spark-llm::910942f7-dab5-4c2b-8e0c-0dab321ec333-spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a
+    markerEnd:
+      type: arrow
+      color: '#6356EA'
+    data:
+      edgeType: curve
+  - source: spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a
+    target: spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0
+    type: customEdge
+    id: reactflow__edge-spark-llm::16963b2f-5e05-43fe-8c56-ebe16a0ce51a-spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0
+    markerEnd:
+      type: arrow
+      color: '#6356EA'
+    data:
+      edgeType: curve
+  - source: spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0
+    target: spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443be
+    type: customEdge
+    id: reactflow__edge-spark-llm::35f79bac-0f7e-4af4-8db7-9c49dc7d21a0-spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443be
+    markerEnd:
+      type: arrow
+      color: '#6356EA'
+    data:
+      edgeType: curve
+  - source: spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443be
+    sourceHandle: normal_one_of::ca21005f-e81a-4905-9478-b22f1c023dde
+    target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    type: customEdge
+    id: reactflow__edge-spark-llm::387c8dec-0f9d-4c8d-b9d2-c6c7aa6443benormal_one_of::ca21005f-e81a-4905-9478-b22f1c023dde-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    markerEnd:
+      type: arrow
+      color: '#6356EA'
+    data:
+      edgeType: curve
